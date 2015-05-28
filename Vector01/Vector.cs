@@ -56,7 +56,7 @@ namespace _5.Classes
             return s;
         }
 
-        public Vector3d NormalVector()
+        public Vector3d NormalVector()//get normal vector in surface
         {
             Vector3d normvec , ab , ad , cd , cb;
 
@@ -76,9 +76,19 @@ namespace _5.Classes
             return normvec / normvec.Length;
         }
 
-        public void MoveSrf()
+        public Point3d Center()
+        {
+            Point3d center = srf.PointAt(50 , 100);
+            return center;
+        }
+
+        public void MoveSrf(int num)//pile of brick
         {
             bool flag = srf.Translate(NormalVector() * (id * height));
+
+            double ang = RhinoMath.ToRadians((angle / (num - 1)) * id);
+
+            bool flag2 = srf.Rotate(ang , NormalVector(), Center());
         }
         
         public void Display(RhinoDoc _doc)
