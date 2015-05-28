@@ -30,15 +30,30 @@ namespace _5.Classes
             angle = _angle;
         }
 
-        public void MakeSrf()
+        public void MakeStartSrf()
         {
             a = new Point3d(0, 0, 0);
             b = new Point3d(100, 0, 0);
             c = new Point3d(100, 200, 0);
             d = new Point3d(0, 200, 0);
+            RhinoApp.WriteLine(String.Format("{0}", a));
 
-            srf = NurbsSurface.CreateFromCorners(a, b, c, d);
-            
+            srf = NurbsSurface.CreateFromCorners(a, b, c, d); 
+        }
+
+        public void MakeSrf(List<Brick> brick)
+        {
+            //a = Point3d.Subtract(brick[id - 1].a, NormalVector() * (id * height));
+            //b = Point3d.Add(brick[id - 1].b, NormalVector() * (id * height));
+            //c = Point3d.Add(brick[id - 1].c, NormalVector() * (id * height));
+            //d = Point3d.Add(brick[id - 1].d, NormalVector() * (id * height));
+            //RhinoApp.WriteLine(String.Format("{0}", NormalVector()));
+
+            //srf = NurbsSurface.CreateFromCorners(a, b, c, d); 
+            for (int i = 0; i < id; i++)
+            {
+                srf.Translate(brick[i].NormalVector() * height);
+            }
         }
 
         public double TriangleArea(Point3d p0 , Point3d p1 , Point3d p2)
@@ -59,16 +74,19 @@ namespace _5.Classes
         public Vector3d NormalVector()//get normal vector in surface
         {
             Vector3d normvec , ab , ad , cd , cb;
-
-            double s1 = TriangleArea(a , b , d);
-            double s2 = TriangleArea(c , d , b);
+            Point3d a1 = srf.PointAt(0 , 0);
+            Point3d b1 = srf.PointAt(100 , 0);
+            Point3d c1 = srf.PointAt(100 , 200);
+            Point3d d1 = srf.PointAt(0 , 200);
+            double s1 = TriangleArea(a1 , b1 , d1);
+            double s2 = TriangleArea(c1 , d1 , b1);
 
             double sum = s1 + s2;
 
-            ab = new Vector3d(b) - new Vector3d(a);
-            ad = new Vector3d(d) - new Vector3d(a);
-            cd = new Vector3d(d) - new Vector3d(c);
-            cb = new Vector3d(b) - new Vector3d(c);
+            ab = new Vector3d(b1) - new Vector3d(a1);
+            ad = new Vector3d(d1) - new Vector3d(a1);
+            cd = new Vector3d(d1) - new Vector3d(c1);
+            cb = new Vector3d(b1) - new Vector3d(c1);
 
             normvec = Vector3d.CrossProduct(ab , ad) * (s1 / sum);
             normvec += Vector3d.CrossProduct(cd, cb) * (s2 / sum);
@@ -84,11 +102,11 @@ namespace _5.Classes
 
         public void MoveSrf(int num)//pile of brick
         {
-            bool flag = srf.Translate(NormalVector() * (id * height));
-
             double ang = RhinoMath.ToRadians((angle / (num - 1)) * id);
 
             bool flag2 = srf.Rotate(ang , NormalVector(), Center());
+
+            bool flag3 = srf.Rotate(ang, new Vector3d(0, 1, 0), Center());
         }
         
         public void Display(RhinoDoc _doc)
