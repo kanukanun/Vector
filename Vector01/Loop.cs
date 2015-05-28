@@ -10,19 +10,25 @@ namespace _5.Classes
 {
     class Loop : Rhino_Processing
     {
-        Brick b1;
+        List<Brick> brick = new List<Brick>();
 
         public override void Setup()
         {
-            b1 = new Brick(0, 180);
+            for (int i = 0; i < 10; i++)
+            {
+                brick.Add(new Brick(i , 50 , 180));
+            }
         }
         
 
         public override void Draw()
         {
-            b1.MakeSrf();
-            b1.MoveSrf();
-            b1.Display(doc);
+            foreach (Brick n in brick)
+            {
+                n.MakeSrf();
+                n.MoveSrf();
+                n.Display(doc);
+            }
         }
     }
 }
