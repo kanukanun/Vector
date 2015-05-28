@@ -12,7 +12,7 @@ namespace _5.Classes
     class Brick
     {
         private int id;
-        private double size;
+        private double height;
         private double angle;
         
         private Point3d a, b, c, d;
@@ -21,10 +21,12 @@ namespace _5.Classes
 
          public Brick(
             int _id,
+             double _height,
             double _angle
         )
         {
             id = _id;
+            height = _height; 
             angle = _angle;
         }
 
@@ -76,7 +78,7 @@ namespace _5.Classes
 
         public void MoveSrf()
         {
-            bool flag = srf.Translate(NormalVector());
+            bool flag = srf.Translate(NormalVector() * (id * height));
         }
         
         public void Display(RhinoDoc _doc)
