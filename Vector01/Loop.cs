@@ -14,20 +14,23 @@ namespace _5.Classes
 
         public override void Setup()
         {
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 30; i++)
             {
-                brick.Add(new Brick(i , 50 , 180));
+                brick.Add(new Brick(i , 80 , 360));
             }
         }
         
 
         public override void Draw()
         {
-            foreach (Brick n in brick)
+            brick[0].MakeStartSrf();
+
+            for (int i = 1; i < brick.Count; i++)
             {
-                n.MakeSrf();
-                n.MoveSrf();
-                n.Display(doc);
+                brick[i].MakeStartSrf();
+                brick[i].MakeSrf(brick);
+                brick[i].MoveSrf(brick.Count);
+                brick[i].Display(doc);
             }
         }
     }
