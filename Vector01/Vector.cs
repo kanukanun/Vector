@@ -14,9 +14,9 @@ namespace _5.Classes
         private int id;
         private double height;
         private double angle;
-        
-        private Point3d a, b, c, d;
-        private NurbsSurface srf;
+
+        private Point3d a0 , b0 , c0 , d0 , a1, b1, c1, d1;
+        private NurbsSurface srf, srf1, srf2, srf3, srf4;
 
 
          public Brick(
@@ -32,31 +32,23 @@ namespace _5.Classes
 
         public void MakeStartSrf()
         {
-            a = new Point3d(0, 0, 0);
-            b = new Point3d(100, 0, 0);
-            c = new Point3d(100, 200, 0);
-            d = new Point3d(0, 200, 0);
-            RhinoApp.WriteLine(String.Format("{0}", a));
+            Point3d a = new Point3d(0, 0, 0);
+            Point3d b = new Point3d(100, 0, 0);
+            Point3d c = new Point3d(100, 200, 0);
+            Point3d d = new Point3d(0, 200, 0);
 
-            srf = NurbsSurface.CreateFromCorners(a, b, c, d); 
+            srf = NurbsSurface.CreateFromCorners(a, b, c, d);
         }
 
         public void MakeSrf(List<Brick> brick)
         {
-            //a = Point3d.Subtract(brick[id - 1].a, NormalVector() * (id * height));
-            //b = Point3d.Add(brick[id - 1].b, NormalVector() * (id * height));
-            //c = Point3d.Add(brick[id - 1].c, NormalVector() * (id * height));
-            //d = Point3d.Add(brick[id - 1].d, NormalVector() * (id * height));
-            //RhinoApp.WriteLine(String.Format("{0}", NormalVector()));
-
-            //srf = NurbsSurface.CreateFromCorners(a, b, c, d); 
             for (int i = 0; i < id; i++)
             {
                 srf.Translate(brick[i].NormalVector() * height);
             }
         }
 
-        public double TriangleArea(Point3d p0 , Point3d p1 , Point3d p2)
+        private double TriangleArea(Point3d p0 , Point3d p1 , Point3d p2)
         {
             double s;
             double half;
@@ -71,13 +63,23 @@ namespace _5.Classes
             return s;
         }
 
-        public Vector3d NormalVector()//get normal vector in surface
+        public void MakeBrick(List<Brick> brick)
+        {
+            srf1 = NurbsSurface.CreateFromCorners(brick[id - 1].a1, brick[id - 1].b1, b0, a0);
+            srf2 = NurbsSurface.CreateFromCorners(brick[id - 1].b1, brick[id - 1].c1, c0, b0);
+            srf3 = NurbsSurface.CreateFromCorners(brick[id - 1].c1, brick[id - 1].d1, d0, c0);
+            srf4 = NurbsSurface.CreateFromCorners(brick[id - 1].d1, brick[id - 1].a1, a0, d0);
+            //srf5 = NurbsSurface.CreateFromCorners(a1 , b1 , c1 , d1);
+        }
+
+        private Vector3d NormalVector()//get normal vector in surface
         {
             Vector3d normvec , ab , ad , cd , cb;
-            Point3d a1 = srf.PointAt(0 , 0);
-            Point3d b1 = srf.PointAt(100 , 0);
-            Point3d c1 = srf.PointAt(100 , 200);
-            Point3d d1 = srf.PointAt(0 , 200);
+            a1 = srf.PointAt(0 , 0);
+            b1 = srf.PointAt(100 , 0);
+            c1 = srf.PointAt(100 , 200);
+            d1 = srf.PointAt(0 , 200);
+
             double s1 = TriangleArea(a1 , b1 , d1);
             double s2 = TriangleArea(c1 , d1 , b1);
 
@@ -94,7 +96,7 @@ namespace _5.Classes
             return normvec / normvec.Length;
         }
 
-        public Point3d Center()
+        private Point3d Center()
         {
             Point3d center = srf.PointAt(50 , 100);
             return center;
@@ -112,6 +114,10 @@ namespace _5.Classes
         public void Display(RhinoDoc _doc)
         {
             _doc.Objects.AddSurface(srf);
+            _doc.Objects.AddSurface(srf1);
+            _doc.Objects.AddSurface(srf2);
+            _doc.Objects.AddSurface(srf3);
+            _doc.Objects.AddSurface(srf4);
         }
 
     }
